@@ -1,4 +1,4 @@
-#include "ast.h"
+#include "ast.hpp"
 
 #if defined(_MSC_VER)
 #pragma warning(push, 0)
@@ -13,7 +13,7 @@
 #pragma warning(pop)
 #endif
 
-#include "deviant_llvm.h"
+#include "deviant_llvm.hpp"
 
 namespace deviant {
 llvm::Value* Program::generateCode(DeviantLLVM& context) {
@@ -183,7 +183,7 @@ llvm::Value* IfStatement::generateCode(DeviantLLVM& context) {
   context.endScope();
 
   context.newScope(else_block);
-  llvm::Value* else_val = nullptr;
+  [[maybe_unused]] llvm::Value* else_val = nullptr;
   if (else_) {
     else_->generateCode(context);
   }

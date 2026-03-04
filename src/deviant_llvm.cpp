@@ -1,4 +1,4 @@
-#include "deviant_llvm.h"
+#include "deviant_llvm.hpp"
 
 namespace deviant {
 DeviantLLVM::DeviantLLVM() {

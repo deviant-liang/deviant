@@ -1,6 +1,9 @@
 ; ModuleID = 'deviant'
 source_filename = "deviant"
 
+@0 = private unnamed_addr constant [3 x i8] c"%d\00", align 1
+@1 = private unnamed_addr constant [3 x i8] c"%d\00", align 1
+
 declare i32 @printf(ptr, ...)
 
 define i32 @monkey() {
@@ -39,4 +42,9 @@ else2:                                            ; preds = %entry
   br label %merge3
 
 merge3:                                           ; preds = %else2, %merge
+  %a4 = load i32, ptr %a, align 4
+  %printfCall = call i32 (ptr, ...) @printf(ptr @0, i32 %a4)
+  %b5 = load i32, ptr %b, align 4
+  %printfCall6 = call i32 (ptr, ...) @printf(ptr @1, i32 %b5)
+  ret i32 0
 }

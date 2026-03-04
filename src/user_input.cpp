@@ -1,4 +1,4 @@
-#include "user_input.h"
+#include "user_input.hpp"
 
 namespace deviant {
 namespace {
@@ -38,18 +38,12 @@ bool isValidDvtFile(const std::string& filename) {
 }  // namespace
 
 bool UserInput::handleUserInput(int argc, char* argv[]) {
-#ifdef __DEBUG  // debug test
-  filename_ = "../../test.dv";
-  return true;
-#endif
-
   if (argc <= 1) {
     printMessage(Option::HELP);
     return false;
   }
   std::string arg(argv[1]);
-  if (argc == 2 && arg[0] == '-') {
-    // TODO: not correct here
+  if (arg.size() > 1 && arg[0] == '-') {
     const std::string& opt = (arg[1] == '-') ? (arg.substr(2, arg.size()))
                                              : (arg.substr(1, arg.size()));
 
@@ -63,6 +57,8 @@ bool UserInput::handleUserInput(int argc, char* argv[]) {
   } else if (isValidDvtFile(arg)) {  // filename
     filename_ = arg;
     return true;
+  } else {
+    printMessage(Option::INCORRECT);
   }
   return false;
 }

@@ -1,5 +1,5 @@
-#include "parser.h"
-#include "token.h"
+#include "parser.hpp"
+#include "token.hpp"
 
 namespace deviant {
 std::unique_ptr<Program> Parser::parse() {
