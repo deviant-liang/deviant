@@ -12,32 +12,33 @@ void printErrorMesesage(const std::string err) {
 
 void printMessage(Option option) {
     switch (option) {
-    case Option::HELP:
-        printf("Usage:\n");
-        printf("deviant filename -h -v -q path\n");
-        printf("\t-h this help text.\n");
-        printf("\t-v be more verbose.\n");
-        printf("\t-q be quiet.\n");
-        break;
-    case Option::VERSION:
-        printf("deviant version 1.0.0\n");
-        break;
-    case Option::INCORRECT:
-        printErrorMesesage("Input parameter is not correct");
-        printErrorMesesage("Run 'deviant --help' for all supported options.");
-        break;
-    default:
-        break;
+        case Option::HELP:
+            printf("Usage:\n");
+            printf("deviant filename -h -v -q path\n");
+            printf("\t-h this help text.\n");
+            printf("\t-v be more verbose.\n");
+            printf("\t-q be quiet.\n");
+            break;
+        case Option::VERSION:
+            printf("deviant version 1.0.0\n");
+            break;
+        case Option::INCORRECT:
+            printErrorMesesage("Input parameter is not correct");
+            printErrorMesesage(
+                "Run 'deviant --help' for all supported options.");
+            break;
+        default:
+            break;
     }
 }
 
 bool isValidDvtFile(const std::string& filename) {
-    size_t location = filename.find_first_of('.');
+    size_t      location = filename.find_first_of('.');
     std::string extension = filename.substr(location + 1, filename.size());
     return (extension == "dvt" || extension == "dv") ? true : false;
 }
 
-}  // namespace
+} // namespace
 
 bool UserInput::handleUserInput(int argc, char* argv[]) {
     if (argc <= 1) {
@@ -46,8 +47,8 @@ bool UserInput::handleUserInput(int argc, char* argv[]) {
     }
     std::string arg(argv[1]);
     if (arg.size() > 1 && arg[0] == '-') {
-        const std::string& opt = (arg[1] == '-') ? (arg.substr(2, arg.size())) :
-                                                   (arg.substr(1, arg.size()));
+        const std::string& opt = (arg[1] == '-') ? (arg.substr(2, arg.size()))
+                                                 : (arg.substr(1, arg.size()));
 
         if (opt == "version") {
             printMessage(Option::VERSION);
@@ -56,7 +57,7 @@ bool UserInput::handleUserInput(int argc, char* argv[]) {
         } else {
             printMessage(Option::INCORRECT);
         }
-    } else if (isValidDvtFile(arg)) {  // filename
+    } else if (isValidDvtFile(arg)) { // filename
         filename_ = arg;
         return true;
     } else {
@@ -64,4 +65,4 @@ bool UserInput::handleUserInput(int argc, char* argv[]) {
     }
     return false;
 }
-}  // namespace deviant
+} // namespace deviant

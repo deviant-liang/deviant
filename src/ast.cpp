@@ -1,7 +1,7 @@
 #include "ast.hpp"
 
 #if defined(_MSC_VER)
-#    pragma warning(push, 0)
+#pragma warning(push, 0)
 #endif
 
 #include "llvm/IR/IRBuilder.h"
@@ -10,7 +10,7 @@
 #include "llvm/IR/Verifier.h"
 
 #if defined(_MSC_VER)
-#    pragma warning(pop)
+#pragma warning(pop)
 #endif
 
 #include "deviant_llvm.hpp"
@@ -49,7 +49,7 @@ llvm::Value* VariableDeclaration::generateCode(DeviantLLVM& context) {
 
     const std::string& var_name(identifier_->getName());
 
-    if (context.findVariable(var_name)) {  // already declard!
+    if (context.findVariable(var_name)) { // already declard!
         return nullptr;
     }
 
@@ -72,7 +72,7 @@ llvm::Value* Assignment::generateCode(DeviantLLVM& context) {
     if (alloc) {
         llvm::Value* val = expr_->generateCode(context);
         return new llvm::StoreInst(val, alloc, false, context.currentBlock());
-    } else {  // not declare yet
+    } else { // not declare yet
         return nullptr;
     }
 }
@@ -158,7 +158,7 @@ llvm::Value* IfStatement::generateCode(DeviantLLVM& context) {
     if (!cmp_result)
         return nullptr;
 
-    llvm::Function* fn = context.currentBlock()->getParent();
+    llvm::Function*   fn = context.currentBlock()->getParent();
     llvm::BasicBlock* then_block =
         llvm::BasicBlock::Create(context.getGlobalContext(), "then", fn);
     llvm::BasicBlock* else_block =
@@ -203,4 +203,4 @@ llvm::Value* IfStatement::generateCode(DeviantLLVM& context) {
     return merge_block;
 }
 
-}  // namespace deviant
+} // namespace deviant

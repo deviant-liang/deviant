@@ -8,9 +8,9 @@ namespace deviant {
 class UserInput {
 public:
     // return true if the user entered a valid filename
-    [[nodiscard]] bool handleUserInput(int argc, char* argv[]);
+    [[nodiscard]] auto handleUserInput(int argc, char* argv[]) -> bool;
 
-    const std::string& getFilename() {
+    auto getFilename() const -> const std::string& {
         return filename_;
     }
 
@@ -18,6 +18,6 @@ private:
     std::string filename_;
 };
 
-}  // namespace deviant
+} // namespace deviant
 
-#endif  // __USAGE__
+#endif // __USAGE__

@@ -1,6 +1,9 @@
 #ifndef __TOKEN_H__
 #define __TOKEN_H__
 
+#include <optional>
+#include <string>
+
 namespace deviant {
 enum class TokenType {
     ILLEGAL,
@@ -34,10 +37,10 @@ enum class TokenType {
 };
 
 struct Token {
-    TokenType type;
+    TokenType                  type;
     std::optional<std::string> value;
 };
 
-}  // namespace deviant
+} // namespace deviant
 
-#endif  // __TOKEN_H__
+#endif // __TOKEN_H__

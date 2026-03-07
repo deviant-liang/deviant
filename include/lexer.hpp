@@ -13,7 +13,7 @@ class Lexer {
 public:
     explicit Lexer(const std::string& src);
 
-    inline void tokenize() {
+    inline auto tokenize() -> void {
         std::string buf("");
         while (peek().has_value()) {
             if (std::isalpha(peek().value())) {
@@ -65,7 +65,7 @@ public:
                 tokens_.push_back({.type = TokenType::SEMICOLON});
             } else if (peek().value() == '=') {
                 if (peek(1).has_value() &&
-                    peek(1).value() == '=') {  // deal with comment
+                    peek(1).value() == '=') { // deal with comment
                     consume();
                     consume();
                     tokens_.push_back({.type = TokenType::EQ});
@@ -88,7 +88,7 @@ public:
                     tokens_.push_back({.type = TokenType::MINUS});
                 }
             } else if (peek().value() == '/') {
-                if (peek(-1).value() == '/') {  // deal with comment
+                if (peek(-1).value() == '/') { // deal with comment
                     tokens_.pop_back();
                     char c = '/';
                     while (c != '\n') {
@@ -100,7 +100,7 @@ public:
                 }
             } else if (peek().value() == '<') {
                 if (peek(1).has_value() &&
-                    peek(1).value() == '=') {  // deal with comment
+                    peek(1).value() == '=') { // deal with comment
                     consume();
                     consume();
                     tokens_.push_back({.type = TokenType::LE});
@@ -110,7 +110,7 @@ public:
                 }
             } else if (peek().value() == '>') {
                 if (peek(1).has_value() &&
-                    peek(1).value() == '=') {  // deal with comment
+                    peek(1).value() == '=') { // deal with comment
                     consume();
                     consume();
                     tokens_.push_back({.type = TokenType::GE});
@@ -120,7 +120,7 @@ public:
                 }
             } else if (peek().value() == '!') {
                 if (peek(1).has_value() &&
-                    peek(1).value() == '=') {  // deal with comment
+                    peek(1).value() == '=') { // deal with comment
                     consume();
                     consume();
                     tokens_.push_back({.type = TokenType::NE});
@@ -164,12 +164,10 @@ private:
     }
 
     std::vector<Token> tokens_;
-
-    std::string str_;
-
-    size_t index_;
+    std::string        str_;
+    size_t             index_;
 };
 
-}  // namespace deviant
+} // namespace deviant
 
-#endif  // __LEXER_H__
+#endif // __LEXER_H__

@@ -1,8 +1,6 @@
 #ifndef __PARSER_H__
 #define __PARSER_H__
 
-#include <map>
-
 #include "ast.hpp"
 #include "lexer.hpp"
 #include "token.hpp"
@@ -15,32 +13,31 @@ public:
     }
 
     // parse whole program
-    std::unique_ptr<Program> parse();
+    auto parse() -> std::unique_ptr<Program>;
 
 private:
     // TODO: lots of things...
-    std::unique_ptr<Expression> parseExpression();
-    std::unique_ptr<Statement> parseTopLevelStatement();
-    std::unique_ptr<Statement> parseStatement();
-    std::unique_ptr<Identifier> parseIdentifier();
-    std::unique_ptr<VariableDeclaration> parseVariableDeclaration();
-    std::unique_ptr<Assignment> parseAssignment();
-    std::unique_ptr<FunctionStatement> parseFunctionStatement();
-    std::unique_ptr<FunctionCall> parseFunctionCall();
-    std::unique_ptr<ReturnStatement> parseReturnStatement();
-    std::unique_ptr<ComparationOp> parseInfixStatement();
-    std::unique_ptr<IfStatement> parseIfStatement();
-    std::unique_ptr<Block> parseBlock();
+    auto parseExpression() -> std::unique_ptr<Expression>;
+    auto parseTopLevelStatement() -> std::unique_ptr<Statement>;
+    auto parseStatement() -> std::unique_ptr<Statement>;
+    auto parseIdentifier() -> std::unique_ptr<Identifier>;
+    auto parseVariableDeclaration() -> std::unique_ptr<VariableDeclaration>;
+    auto parseAssignment() -> std::unique_ptr<Assignment>;
+    auto parseFunctionStatement() -> std::unique_ptr<FunctionStatement>;
+    auto parseFunctionCall() -> std::unique_ptr<FunctionCall>;
+    auto parseReturnStatement() -> std::unique_ptr<ReturnStatement>;
+    auto parseInfixStatement() -> std::unique_ptr<ComparationOp>;
+    auto parseIfStatement() -> std::unique_ptr<IfStatement>;
+    auto parseBlock() -> std::unique_ptr<Block>;
 
-    [[nodiscard]] std::optional<Token> peek(int offset = 0) const;
+    [[nodiscard]] auto peek(int offset = 0) const -> std::optional<Token>;
 
-    const Token& consume();
+    auto consume() -> const Token&;
 
-    Lexer lexer_;
-
+    Lexer  lexer_;
     size_t index_;
 };
 
-}  // namespace deviant
+} // namespace deviant
 
 #endif

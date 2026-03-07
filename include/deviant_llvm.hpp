@@ -1,12 +1,11 @@
 #ifndef __DEVIANT_LLVM__
 #define __DEVIANT_LLVM__
 
-#include <memory>
+#include <map>
 #include <string>
-#include <vector>
 
 #if defined(_MSC_VER)
-#    pragma warning(push, 0)
+#pragma warning(push, 0)
 #endif
 
 #include "llvm/IR/IRBuilder.h"
@@ -14,12 +13,13 @@
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Verifier.h"
 
+#include "parser.hpp"
+
 #if defined(_MSC_VER)
-#    pragma warning(pop)
+#pragma warning(pop)
 #endif
 
 #include "ast.hpp"
-#include "parser.hpp"
 
 namespace deviant {
 
@@ -28,7 +28,8 @@ public:
     CodeGenBlock(llvm::BasicBlock* bb) {
         bblock_ = bb;
     }
-    ~CodeGenBlock() {}
+    ~CodeGenBlock() {
+    }
     void setCodeBlock(llvm::BasicBlock* bb) {
         bblock_ = bb;
     }
@@ -43,9 +44,9 @@ public:
     }
 
 private:
-    llvm::BasicBlock* bblock_{nullptr};
+    llvm::BasicBlock*                        bblock_{nullptr};
     std::map<std::string, llvm::AllocaInst*> locals_;
-    std::map<std::string, std::string> types_;
+    std::map<std::string, std::string>       types_;
 };
 
 class DeviantLLVM {
@@ -60,7 +61,7 @@ public:
         // compile to LLVM IR
         compile(*ast);
 
-#ifdef _DEBUG  // print generated codex
+#ifdef _DEBUG // print generated codex
         module_->print(llvm::outs(), nullptr);
 #endif
 
@@ -162,7 +163,7 @@ private:
                 true /* this is var arg func type*/));
     }
 
-    llvm::Function* createFunction(const std::string& fn_name,
+    llvm::Function* createFunction(const std::string&  fn_name,
                                    llvm::FunctionType* fn_type) {
         // function prototype might already be defined
         auto fn = module_->getFunction(fn_name);
@@ -176,7 +177,7 @@ private:
         return fn;
     }
 
-    llvm::Function* createFunctionPrototype(const std::string& fn_name,
+    llvm::Function* createFunctionPrototype(const std::string&  fn_name,
                                             llvm::FunctionType* fn_type) {
         auto fn = llvm::Function::Create(
             fn_type, llvm::Function::ExternalLinkage, fn_name, *module_);
@@ -192,20 +193,20 @@ private:
     }
 
     llvm::BasicBlock* createBB(const std::string& name,
-                               llvm::Function* fn = nullptr) {
+                               llvm::Function*    fn = nullptr) {
         return llvm::BasicBlock::Create(*context_, name, fn);
     }
 
     std::unique_ptr<Parser> parser_;
 
     // currently complier function
-    llvm::Function* fn_;
+    llvm::Function*                    fn_;
     std::unique_ptr<llvm::LLVMContext> context_;
-    std::unique_ptr<llvm::Module> module_;
+    std::unique_ptr<llvm::Module>      module_;
     std::unique_ptr<llvm::IRBuilder<>> builder_;
-    std::list<CodeGenBlock*> code_blocks_;
+    std::list<CodeGenBlock*>           code_blocks_;
 };
 
-}  // namespace deviant
+} // namespace deviant
 
-#endif  // __DEVIANT_LLVM__
+#endif // __DEVIANT_LLVM__

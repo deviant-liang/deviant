@@ -14,8 +14,8 @@ void DeviantLLVM::initModule() {
 }
 
 void DeviantLLVM::saveModuleToFile(const std::string& filename) {
-    std::error_code err_code;
+    std::error_code      err_code;
     llvm::raw_fd_ostream out(filename, err_code);
     module_->print(out, nullptr);
 }
-}  // namespace deviant
+} // namespace deviant
