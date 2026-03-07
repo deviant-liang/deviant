@@ -1,5 +1,7 @@
 #include "user_input.hpp"
 
+#include <iostream>
+
 namespace deviant {
 namespace {
 enum class Option { HELP, VERSION, INCORRECT };

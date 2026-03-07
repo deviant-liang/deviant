@@ -1,6 +1,8 @@
 #ifndef __USAGE__
 #define __USAGE__
 
+#include <string>
+
 namespace deviant {
 
 class UserInput {
