@@ -1,6 +1,6 @@
 #include <fstream>
-#include <memory>
 #include <string>
+#include <vector>
 
 #include "deviant_llvm.hpp"
 #include "user_input.hpp"
@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
     if (!handle_file)
         return 1;
 
-    std::string program(readFile(user_input.getfilename()));
+    std::string program(readFile(user_input.getFilename()));
     deviant::DeviantLLVM vm;
     vm.execute(program);
 
