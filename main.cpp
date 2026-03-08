@@ -6,7 +6,7 @@
 #include "deviant_llvm.hpp"
 #include "user_input.hpp"
 
-auto readFile(const std::string& filename) -> std::string {
+auto read_file(const std::string& filename) -> std::string {
     std::ifstream ifs(filename.c_str(), std::ios::in | std::ios::ate);
 
     std::ifstream::pos_type filesize = ifs.tellg();
@@ -20,13 +20,11 @@ auto readFile(const std::string& filename) -> std::string {
 
 auto main(int argc, char* argv[]) -> int {
     deviant::UserInput user_input;
-    const bool         handle_file = user_input.handleUserInput(argc, argv);
+    const bool         handle_file = user_input.handle_user_input(argc, argv);
 
-    if (!handle_file) {
-        return EXIT_FAILURE;
-    }
+    if (!handle_file) { return EXIT_FAILURE; }
 
-    std::string          program(readFile(user_input.getFilename()));
+    std::string          program(read_file(user_input.get_filename()));
     deviant::DeviantLLVM vm;
     vm.execute(program);
 

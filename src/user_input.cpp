@@ -3,36 +3,37 @@
 #include <iostream>
 
 namespace deviant {
+
 namespace {
+
 enum class Option { HELP, VERSION, INCORRECT };
 
-void printErrorMesesage(const std::string err) {
+auto printErrorMesesage(const std::string err) -> void {
     std::cout << "Deviant Error: " << err << "\n";
 }
 
-void printMessage(Option option) {
+auto printMessage(Option option) -> void {
     switch (option) {
-        case Option::HELP:
-            printf("Usage:\n");
-            printf("deviant filename -h -v -q path\n");
-            printf("\t-h this help text.\n");
-            printf("\t-v be more verbose.\n");
-            printf("\t-q be quiet.\n");
-            break;
-        case Option::VERSION:
-            printf("deviant version 1.0.0\n");
-            break;
-        case Option::INCORRECT:
-            printErrorMesesage("Input parameter is not correct");
-            printErrorMesesage(
-                "Run 'deviant --help' for all supported options.");
-            break;
-        default:
-            break;
+    case Option::HELP:
+        printf("Usage:\n");
+        printf("deviant filename -h -v -q path\n");
+        printf("\t-h this help text.\n");
+        printf("\t-v be more verbose.\n");
+        printf("\t-q be quiet.\n");
+        break;
+    case Option::VERSION:
+        printf("deviant version 1.0.0\n");
+        break;
+    case Option::INCORRECT:
+        printErrorMesesage("Input parameter is not correct");
+        printErrorMesesage("Run 'deviant --help' for all supported options.");
+        break;
+    default:
+        break;
     }
 }
 
-bool isValidDvtFile(const std::string& filename) {
+auto isValidDvtFile(const std::string& filename) -> bool {
     size_t      location = filename.find_first_of('.');
     std::string extension = filename.substr(location + 1, filename.size());
     return (extension == "dvt" || extension == "dv") ? true : false;
@@ -40,7 +41,7 @@ bool isValidDvtFile(const std::string& filename) {
 
 } // namespace
 
-bool UserInput::handleUserInput(int argc, char* argv[]) {
+auto UserInput::handle_user_input(int argc, char* argv[]) -> bool {
     if (argc <= 1) {
         printMessage(Option::HELP);
         return false;

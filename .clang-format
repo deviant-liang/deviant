@@ -1,23 +1,19 @@
-Language:        Cpp
-BasedOnStyle:    LLVM
+Language:                Cpp
+BasedOnStyle:            LLVM
 
-# --- Core Indentation and Braces ---
-IndentWidth:         4
-TabWidth:            4
-ColumnLimit:         80
-UseTab:              Never
-BreakBeforeBraces:   Attach
-AccessModifierOffset: -4
+# --- Core Indentation ---
+IndentWidth:             4
+AccessModifierOffset:    -4
 
-# --- Alignment Settings ---
+# --- Alignment Settings (Crucial for Variable Alignment) ---
 AlignConsecutiveDeclarations: true
 AlignConsecutiveAssignments:  false
+PointerAlignment:             Left
 
-# --- Visual Studio Style Preferences ---
-IndentCaseLabels:    true
-PointerAlignment:    Left
-SpaceBeforeParens:   ControlStatements
+# --- Single Line Rules ---
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: true
+AllowShortBlocksOnASingleLine: true
 
-# --- Performance and Compatibility ---
-AllowShortFunctionsOnASingleLine: None
-AllowShortIfStatementsOnASingleLine: false
+# --- Column Limit ---
+ColumnLimit:             80

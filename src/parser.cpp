@@ -2,95 +2,95 @@
 #include "token.hpp"
 
 namespace deviant {
-std::unique_ptr<Program> Parser::parse() {
+
+auto Parser::parse() -> std::unique_ptr<Program> {
     std::unique_ptr<Program> program = std::make_unique<Program>();
-    while (index_ < lexer_.getTokens().size()) {
+    while (index_ < lexer_.get_tokens().size()) {
         auto statement_ptr = parseTopLevelStatement();
-        if (statement_ptr) {
-            program->pushBack(std::move(statement_ptr));
-        }
+        if (statement_ptr) { program->pushBack(std::move(statement_ptr)); }
         consume();
     }
     return program;
 }
 
-std::unique_ptr<Expression> Parser::parseExpression() {
+auto Parser::parseExpression() -> std::unique_ptr<Expression> {
     if (peek().has_value() && peek().value().value.has_value()) {
         Token              token(peek().value());
         const std::string& value(token.value.value());
         switch (peek().value().type) {
-            case TokenType::INT_LIT:
-                return std::make_unique<Integer>(stoi(value));
-            case TokenType::IDENTIFIER:
-                if (peek(1).value().type == TokenType::OPEN_PAREN) {
-                    // TODO: remove dangerous code
-                    consume();
-                    return parseFunctionCall();
-                } else {
-                    return parseIdentifier();
-                }
-            default:
-                return nullptr;
+        case TokenType::INT_LIT:
+            return std::make_unique<Integer>(stoi(value));
+        case TokenType::IDENTIFIER:
+            if (peek(1).value().type == TokenType::OPEN_PAREN) {
+                // TODO: remove dangerous code
+                consume();
+                return parseFunctionCall();
+            } else {
+                return parseIdentifier();
+            }
+        default:
+            return nullptr;
         }
     } else
         return nullptr;
 }
 
-std::unique_ptr<Statement> Parser::parseTopLevelStatement() {
+auto Parser::parseTopLevelStatement() -> std::unique_ptr<Statement> {
     TokenType type =
         peek().has_value() ? peek().value().type : TokenType::ILLEGAL;
 
     switch (type) {
-        case TokenType::FN:
-            return parseFunctionStatement();
-        default:
-            return nullptr;
+    case TokenType::FN:
+        return parseFunctionStatement();
+    default:
+        return nullptr;
     }
 }
 
-std::unique_ptr<Statement> Parser::parseStatement() {
+auto Parser::parseStatement() -> std::unique_ptr<Statement> {
     TokenType type =
         peek().has_value() ? peek().value().type : TokenType::ILLEGAL;
 
     switch (type) {
-        case TokenType::VAR: // declaration of variable
-            if (peek(1).has_value() &&
-                peek(1).value().type == TokenType::IDENTIFIER) {
-                consume();
-                return parseVariableDeclaration(); // deal with assignment later
-            } else {
-                return nullptr;
-            }
-        case TokenType::IDENTIFIER:
-            if (peek(1).has_value() &&
-                peek(1).value().type == TokenType::OPEN_PAREN) {
-                consume();
-                auto fn_call = parseFunctionCall();
-                consume();
-                return fn_call;
-            } else { // TODO:
-                consume();
-                return parseAssignment();
-            }
-        case TokenType::ASSIGNMENT:
+    case TokenType::VAR: // declaration of variable
+        if (peek(1).has_value() &&
+            peek(1).value().type == TokenType::IDENTIFIER) {
+            consume();
+            return parseVariableDeclaration(); // deal with assignment later
+        } else {
+            return nullptr;
+        }
+    case TokenType::IDENTIFIER:
+        if (peek(1).has_value() &&
+            peek(1).value().type == TokenType::OPEN_PAREN) {
+            consume();
+            auto fn_call = parseFunctionCall();
+            consume();
+            return fn_call;
+        } else { // TODO:
+            consume();
             return parseAssignment();
-        case TokenType::IF:
-            return parseIfStatement();
-        case TokenType::RETURN:
-            return parseReturnStatement();
-        default:
-            return nullptr;
+        }
+    case TokenType::ASSIGNMENT:
+        return parseAssignment();
+    case TokenType::IF:
+        return parseIfStatement();
+    case TokenType::RETURN:
+        return parseReturnStatement();
+    default:
+        return nullptr;
     }
 }
 
-std::unique_ptr<Identifier> Parser::parseIdentifier() {
+auto Parser::parseIdentifier() -> std::unique_ptr<Identifier> {
     auto identifier =
         std::make_unique<Identifier>(peek().value().value.value());
 
     return identifier;
 }
 
-std::unique_ptr<VariableDeclaration> Parser::parseVariableDeclaration() {
+auto Parser::parseVariableDeclaration()
+    -> std::unique_ptr<VariableDeclaration> {
     if (peek().has_value() && peek().value().value.has_value()) {
         auto identifier =
             std::make_unique<Identifier>(peek().value().value.value());
@@ -99,13 +99,13 @@ std::unique_ptr<VariableDeclaration> Parser::parseVariableDeclaration() {
         consume();
         auto token_type = peek().value().type;
         switch (token_type) {
-            case TokenType::SEMICOLON:
-                break;
-            case TokenType::ASSIGNMENT: // TODO:
-                --index_;
-                break;
-            default:
-                return nullptr;
+        case TokenType::SEMICOLON:
+            break;
+        case TokenType::ASSIGNMENT: // TODO:
+            --index_;
+            break;
+        default:
+            return nullptr;
         }
         auto var_decl = std::make_unique<VariableDeclaration>(
             std::move(identifier), std::move(expr));
@@ -115,7 +115,7 @@ std::unique_ptr<VariableDeclaration> Parser::parseVariableDeclaration() {
     }
 }
 
-std::unique_ptr<Assignment> Parser::parseAssignment() {
+auto Parser::parseAssignment() -> std::unique_ptr<Assignment> {
     auto assign = std::make_unique<Assignment>();
 
     // TODO: peek(-1) is dangerous
@@ -130,7 +130,7 @@ std::unique_ptr<Assignment> Parser::parseAssignment() {
     return assign;
 }
 
-std::unique_ptr<Block> Parser::parseBlock() {
+auto Parser::parseBlock() -> std::unique_ptr<Block> {
     auto block = std::make_unique<Block>();
 
     auto stmt = parseStatement();
@@ -143,22 +143,21 @@ std::unique_ptr<Block> Parser::parseBlock() {
     return block;
 }
 
-std::unique_ptr<ReturnStatement> Parser::parseReturnStatement() {
+auto Parser::parseReturnStatement() -> std::unique_ptr<ReturnStatement> {
     consume();
     auto ret_stmt = std::make_unique<ReturnStatement>(parseExpression());
 
-    if (consume().type == TokenType::SEMICOLON)
-        return nullptr;
+    if (consume().type == TokenType::SEMICOLON) return nullptr;
 
     return ret_stmt;
 }
 
-std::unique_ptr<ComparationOp> Parser::parseInfixStatement() {
+auto Parser::parseInfixStatement() -> std::unique_ptr<ComparationOp> {
     return nullptr;
     // return std::unique_ptr<ComparationOp>();
 }
 
-std::unique_ptr<IfStatement> Parser::parseIfStatement() {
+auto Parser::parseIfStatement() -> std::unique_ptr<IfStatement> {
     std::unique_ptr<IfStatement> if_stmt = std::make_unique<IfStatement>();
 
     // condition
@@ -184,7 +183,7 @@ std::unique_ptr<IfStatement> Parser::parseIfStatement() {
     return if_stmt;
 }
 
-std::unique_ptr<FunctionStatement> Parser::parseFunctionStatement() {
+auto Parser::parseFunctionStatement() -> std::unique_ptr<FunctionStatement> {
     consume();
     if (peek().value().value.has_value()) {
         auto fn =
@@ -195,8 +194,7 @@ std::unique_ptr<FunctionStatement> Parser::parseFunctionStatement() {
         consume();
         consume();
 
-        if (peek().value().type != TokenType::FN_TYPE)
-            return nullptr;
+        if (peek().value().type != TokenType::FN_TYPE) return nullptr;
 
         // TODO: return type
         consume();
@@ -211,7 +209,7 @@ std::unique_ptr<FunctionStatement> Parser::parseFunctionStatement() {
     }
 }
 
-std::unique_ptr<FunctionCall> Parser::parseFunctionCall() {
+auto Parser::parseFunctionCall() -> std::unique_ptr<FunctionCall> {
     auto fn_call =
         std::make_unique<FunctionCall>(peek(-1).value().value.value());
 
@@ -231,15 +229,13 @@ std::unique_ptr<FunctionCall> Parser::parseFunctionCall() {
     return fn_call;
 }
 
-std::optional<Token> Parser::peek(const int offset) const {
-    const auto& tokens = lexer_.getTokens();
+auto Parser::peek(const int offset) const -> std::optional<Token> {
+    const auto& tokens = lexer_.get_tokens();
     if (index_ + offset >= tokens.size())
         return std::nullopt;
     else
         return tokens[index_ + offset];
 }
 
-const Token& Parser::consume() {
-    return lexer_.getTokens()[index_++];
-}
+auto Parser::consume() -> const Token& { return lexer_.get_tokens()[index_++]; }
 } // namespace deviant

@@ -89,8 +89,7 @@ llvm::Value* Block::generateCode(DeviantLLVM& context) {
 llvm::Value* ReturnStatement::generateCode(DeviantLLVM& context) {
     if (ret_expr_) {
         llvm::Value* ret = ret_expr_->generateCode(context);
-        if (ret == nullptr)
-            return nullptr;
+        if (ret == nullptr) return nullptr;
         return context.getBuilder()->CreateRet(ret);
     } else {
         return nullptr;
@@ -155,8 +154,7 @@ llvm::Value* IfStatement::generateCode(DeviantLLVM& context) {
     llvm::Value* cmp_result = llvm::ConstantInt::get(
         llvm::Type::getInt1Ty(context.getGlobalContext()), true);
 
-    if (!cmp_result)
-        return nullptr;
+    if (!cmp_result) return nullptr;
 
     llvm::Function*   fn = context.currentBlock()->getParent();
     llvm::BasicBlock* then_block =
@@ -172,8 +170,7 @@ llvm::Value* IfStatement::generateCode(DeviantLLVM& context) {
 
     context.newScope(then_block);
     llvm::Value* then_val = then_->generateCode(context);
-    if (then_val == nullptr)
-        return nullptr;
+    if (then_val == nullptr) return nullptr;
 
     if (!context.currentBlock()->getTerminator()) {
         llvm::BranchInst::Create(merge_block, context.currentBlock());
@@ -185,9 +182,7 @@ llvm::Value* IfStatement::generateCode(DeviantLLVM& context) {
 
     context.newScope(else_block);
     [[maybe_unused]] llvm::Value* else_val = nullptr;
-    if (else_) {
-        else_->generateCode(context);
-    }
+    if (else_) { else_->generateCode(context); }
 
     if (!context.currentBlock()->getTerminator()) {
         llvm::BranchInst::Create(merge_block, context.currentBlock());

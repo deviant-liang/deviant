@@ -4,44 +4,26 @@
 #include <map>
 #include <string>
 
-#if defined(_MSC_VER)
-#pragma warning(push, 0)
-#endif
-
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Verifier.h"
 
-#include "parser.hpp"
-
-#if defined(_MSC_VER)
-#pragma warning(pop)
-#endif
-
 #include "ast.hpp"
+#include "parser.hpp"
 
 namespace deviant {
 
 class CodeGenBlock {
 public:
-    CodeGenBlock(llvm::BasicBlock* bb) {
-        bblock_ = bb;
-    }
-    ~CodeGenBlock() {
-    }
-    void setCodeBlock(llvm::BasicBlock* bb) {
-        bblock_ = bb;
-    }
-    llvm::BasicBlock* currentBlock() {
-        return bblock_;
-    }
+    CodeGenBlock(llvm::BasicBlock* bb) { bblock_ = bb; }
+    ~CodeGenBlock() {}
+    void              setCodeBlock(llvm::BasicBlock* bb) { bblock_ = bb; }
+    llvm::BasicBlock* currentBlock() { return bblock_; }
     std::map<std::string, llvm::AllocaInst*>& getValueNames() {
         return locals_;
     }
-    std::map<std::string, std::string>& getTypeMap() {
-        return types_;
-    }
+    std::map<std::string, std::string>& getTypeMap() { return types_; }
 
 private:
     llvm::BasicBlock*                        bblock_{nullptr};
@@ -69,47 +51,35 @@ public:
         saveModuleToFile("./out.ll");
     }
 
-    llvm::LLVMContext& getGlobalContext() {
+    auto getGlobalContext() const -> llvm::LLVMContext& {
         return *context_.get();
     }
-
-    llvm::Type* getGenericIntegerType() {
+    auto getGenericIntegerType() const -> llvm::Type* {
         return llvm::Type::getInt32Ty(getGlobalContext());
     }
+    auto getModule() const -> llvm::Module* { return module_.get(); }
+    auto getBuilder() const -> llvm::IRBuilder<>* { return builder_.get(); }
 
-    llvm::Module* getModule() {
-        return module_.get();
-    }
-
-    llvm::IRBuilder<>* getBuilder() {
-        return builder_.get();
-    }
-
-    void newScope(llvm::BasicBlock* bb) {
-        if (!bb) {
-            bb = llvm::BasicBlock::Create(getGlobalContext(), "scope");
-        }
+    auto newScope(llvm::BasicBlock* bb) -> void {
+        if (!bb) { bb = llvm::BasicBlock::Create(getGlobalContext(), "scope"); }
         code_blocks_.push_front(new CodeGenBlock(bb));
     }
-
-    void endScope() {
+    auto endScope() -> void {
         CodeGenBlock* top = code_blocks_.front();
         code_blocks_.pop_front();
         delete top;
     }
 
     // set the LLVM block where to put the next instructions
-    void setInsertPoint(llvm::BasicBlock* bblock) {
+    auto setInsertPoint(llvm::BasicBlock* bblock) -> void {
         setCurrentBlock(bblock);
     }
 
-    llvm::AllocaInst* findVariable(const std::string& var_name) {
+    auto findVariable(const std::string& var_name) const -> llvm::AllocaInst* {
         // Only look in current scope, since outer scope isn't valid while in
         // function declaration.
         auto& names = locals();
-        if (names.find(var_name) != names.end()) {
-            return names[var_name];
-        }
+        if (names.find(var_name) != names.end()) { return names[var_name]; }
         // return nullptr;
 
         // Travers from inner to outer scope (block) to find the variable.
@@ -131,7 +101,7 @@ public:
         return code_blocks_.front()->currentBlock();
     }
 
-    std::map<std::string, llvm::AllocaInst*>& locals() {
+    auto locals() const -> std::map<std::string, llvm::AllocaInst*>& {
         return code_blocks_.front()->getValueNames();
     }
 
@@ -140,16 +110,16 @@ private:
         code_blocks_.front()->setCodeBlock(block);
     }
 
-    void initModule();
+    auto initModule() -> void;
 
-    void saveModuleToFile(const std::string& filename);
+    auto saveModuleToFile(const std::string& filename) -> void;
 
-    void compile(Program& ast) {
-        // compile main body
+    auto compile(Program& ast) -> void { // compile main body
+
         ast.generateCode(*this);
     }
 
-    void setupExternFunctions() {
+    auto setupExternFunctions() -> void {
         // i8* to substitute for char*, void*, etc
         [[maybe_unused]] auto byte_ptr_Ty =
             builder_->getInt8Ty()->getPointerTo();
@@ -163,22 +133,21 @@ private:
                 true /* this is var arg func type*/));
     }
 
-    llvm::Function* createFunction(const std::string&  fn_name,
-                                   llvm::FunctionType* fn_type) {
+    auto createFunction(const std::string&  fn_name,
+                        llvm::FunctionType* fn_type) -> llvm::Function* {
         // function prototype might already be defined
         auto fn = module_->getFunction(fn_name);
 
         // if not, allocate the function
-        if (!fn) {
-            fn = createFunctionPrototype(fn_name, fn_type);
-        }
+        if (!fn) { fn = createFunctionPrototype(fn_name, fn_type); }
 
         createFunctionBlock(fn);
         return fn;
     }
 
-    llvm::Function* createFunctionPrototype(const std::string&  fn_name,
-                                            llvm::FunctionType* fn_type) {
+    auto
+    createFunctionPrototype(const std::string&  fn_name,
+                            llvm::FunctionType* fn_type) -> llvm::Function* {
         auto fn = llvm::Function::Create(
             fn_type, llvm::Function::ExternalLinkage, fn_name, *module_);
 
@@ -187,13 +156,13 @@ private:
     }
 
     // create function block
-    void createFunctionBlock(llvm::Function* fn) {
+    auto createFunctionBlock(llvm::Function* fn) -> void {
         auto entry = createBB("entry", fn);
         builder_->SetInsertPoint(entry);
     }
 
-    llvm::BasicBlock* createBB(const std::string& name,
-                               llvm::Function*    fn = nullptr) {
+    auto createBB(const std::string& name,
+                  llvm::Function*    fn = nullptr) -> llvm::BasicBlock* {
         return llvm::BasicBlock::Create(*context_, name, fn);
     }
 
